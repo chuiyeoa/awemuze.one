@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cercle Harmonie — awemuze.one</title>
+
+  <!-- Posture -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+
+  <link rel="stylesheet" href="../css/awemuze.css" />
+
+  <!-- Model Viewer (can be vendored later to remove this external fetch) -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+
+<body class="page">
+  <main class="stage" aria-label="Cercle Harmonie">
+    
+
+    <header class="stage__top">
+      <h1 class="stage__title">Cercle Harmonie</h1>
+      <div class="stage__meta">local-only · no tracking</div>
+    </header>
+
+    <section class="stage__viewer" aria-label="Rings">
+      <model-viewer
+        id="mv"
+        src="../assets/glb/Cercle_Harmonie.glb"
+        alt="Cercle Harmonie rings"
+        loading="eager"
+        reveal="auto"
+        camera-controls
+        disable-tap
+        auto-rotate
+        rotation-per-second="6deg"
+        camera-orbit="0deg 70deg 2.6m"
+        min-camera-orbit="auto auto 1.8m"
+        max-camera-orbit="auto auto 4.4m"
+        environment-image="neutral"
+        shadow-intensity="0.25"
+        exposure="1.05"
+      ></model-viewer>
+    </section>
+
+    <footer class="stage__bottom" aria-label="Controls">
+      <div class="controls">
+        <button class="btn" id="toggleRotate" type="button">Pause rotation</button>
+        <button class="btn btn--ghost" id="reset" type="button">Reset view</button>
+        <a class="btn btn--ghost" href="../index.html">Return</a>
+      </div>
+
+      <div class="chip" title="Gentle navigation">
+        <span>Drag to orbit</span>
+        <span class="kbd">R</span><span>reset</span>
+        <span class="kbd">Space</span><span>pause</span>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const mv = document.getElementById('mv');
+    const btnRotate = document.getElementById('toggleRotate');
+    const btnReset = document.getElementById('reset');
+
+    let rotating = true;
+
+    function setRotate(on){
+      rotating = on;
+      mv.autoRotate = on;
+      btnRotate.textContent = on ? 'Pause rotation' : 'Resume rotation';
+    }
+
+    function resetView(){
+      mv.cameraOrbit = '0deg 70deg 2.6m';
+      mv.fieldOfView = '30deg';
+      mv.jumpCameraToGoal();
+    }
+
+    btnRotate.addEventListener('click', () => setRotate(!rotating));
+    btnReset.addEventListener('click', resetView);
+
+    // Keyboard: Space pauses, R resets
+    window.addEventListener('keydown', (e) => {
+      if(e.code === 'Space'){ e.preventDefault(); setRotate(!rotating); }
+      if(e.key === 'r' || e.key === 'R'){ resetView(); }
+    });
+
+    // Silence-friendly: pause rotation when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+      if(document.hidden) mv.autoRotate = false;
+      else mv.autoRotate = rotating;
+    });
+
+    // First paint: ensure a stable baseline
+    mv.addEventListener('load', () => {
+      resetView();
+      setRotate(true);
+    });
+  </script>
+</body>
+</html>
